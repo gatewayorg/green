@@ -4,6 +4,7 @@ import (
 	"os"
 	"syscall"
 
+	"github.com/gatewayorg/green/app"
 	"github.com/gatewayorg/green/pkg/log"
 	"github.com/gatewayorg/green/share"
 	"github.com/urfave/cli/v2"
@@ -50,7 +51,7 @@ func MainRun() {
 	}
 
 	svr := cli.NewApp()
-	svr.Action = nil
+	svr.Action = app.MainRun
 	svr.Flags = flags
 
 	// { sub command list

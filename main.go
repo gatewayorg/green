@@ -1,7 +1,7 @@
 package main
 
-import "fmt"
+import "github.com/gatewayorg/green/cmd"
 
 func main() {
-	fmt.Println("hello green")
+	cmd.MainRun()
 }
