@@ -13,6 +13,9 @@ import (
 )
 
 func MainRun(c *cli.Context) error {
+	// init global enviroment
+	initEnv(c)
+
 	ctx, service := grace.New(context.Background())
 
 	tools.SafeGo(func() {

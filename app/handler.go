@@ -1,7 +1,10 @@
 package app
 
 import (
+	"bytes"
 	"errors"
+	"strings"
+	"sync"
 
 	"github.com/gatewayorg/green/pkg/codec"
 	"github.com/sunvim/utils/tools"
@@ -11,23 +14,35 @@ import (
 var (
 	taskPool   = workpool.New(40960)
 	ErrRequest = errors.New("- error request message\r\n")
+	bufPool    = sync.Pool{
+		New: func() interface{} {
+			return bytes.NewBuffer([]byte{})
+		},
+	}
 )
 
-func handler(frame []byte) (out []byte) {
-	var err error
+func handler(frame []byte) []byte {
+	var (
+		err      error
+		cmd, out []byte
+	)
 	if err = codec.Check(frame); err != nil {
-		out = tools.StringToBytes(ErrRequest.Error())
-		return
+		return tools.StringToBytes(ErrRequest.Error())
 	}
 
 	if out, err = HandleNewConn(frame); err == nil {
-		return
+		return out
 	}
 
-	if _, err = checkCommand(frame); err != nil {
-		out = tools.StringToBytes(err.Error())
-		return
+	if cmd, err = checkCommand(frame); err != nil {
+		return tools.StringToBytes(err.Error())
 	}
 
-	return nil
+	// write ahead log
+	gWal.Write(frame)
+
+	// cache handler
+	cmdMap[strings.ToUpper(tools.BytesToStringFast(cmd))](frame, &out)
+
+	return out
 }

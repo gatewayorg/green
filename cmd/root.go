@@ -48,6 +48,21 @@ func MainRun() {
 			Value: "127.0.0.1",
 			Usage: "gossip service address",
 		},
+		&cli.IntFlag{
+			Name:  share.CACHE_SIZE,
+			Value: 2147483648,
+			Usage: "cache max size",
+		},
+		&cli.StringFlag{
+			Name:  share.WAL_DIR,
+			Value: "wal",
+			Usage: "wal directory",
+		},
+		&cli.IntFlag{
+			Name:  share.WAL_SYNC_INTERVAL,
+			Value: 5,
+			Usage: "sync wal log ervey n seconds",
+		},
 	}
 
 	svr := cli.NewApp()
