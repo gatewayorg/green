@@ -19,7 +19,7 @@ func TestFileNaming(t *testing.T) {
 	seq := newFileSequence()
 	filename := filepath.Join("folder", sequenceToFilename(seq))
 	assert.Equal(t, seq, filenameToSequence(filename))
-	filename = filename + compressedSuffix
+	filename = filename + CompressedSuffix
 	assert.Equal(t, seq, filenameToSequence(filename))
 }
 
@@ -162,7 +162,7 @@ func TestWAL(t *testing.T) {
 	for _, fi := range files {
 		name := filepath.Join(dir, fi.Name())
 		file, _ := os.OpenFile(name, os.O_RDWR, 0644)
-		if strings.HasSuffix(name, compressedSuffix) {
+		if strings.HasSuffix(name, CompressedSuffix) {
 			w := snappy.NewWriter(file)
 			lenBuf := make([]byte, 4)
 			encoding.PutUint32(lenBuf, 100)

@@ -38,9 +38,6 @@ func handler(frame []byte) []byte {
 		return tools.StringToBytes(err.Error())
 	}
 
-	// write ahead log
-	gWal.Write(frame)
-
 	// cache handler
 	cmdMap[strings.ToUpper(tools.BytesToStringFast(cmd))](frame, &out)
 

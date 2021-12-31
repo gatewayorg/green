@@ -8,7 +8,7 @@ require (
 	github.com/golang/snappy v0.0.4
 	github.com/oxtoacart/bpool v0.0.0-20190530202638-03653db5a59c
 	github.com/stretchr/testify v1.7.0
-	github.com/sunvim/utils v0.0.0-20211230122928-b82873d084d0
+	github.com/sunvim/utils v0.0.1
 	github.com/urfave/cli/v2 v2.3.0
 )
 

@@ -17,6 +17,10 @@ func MainRun(c *cli.Context) error {
 	initEnv(c)
 
 	ctx, service := grace.New(context.Background())
+	service.Register(func() error {
+		gWal.Close()
+		return nil
+	})
 
 	tools.SafeGo(func() {
 		listenAndServ(ctx, c)
@@ -32,12 +36,10 @@ func listenAndServ(ctx context.Context, c *cli.Context) {
 		NoCopy:     true,
 		BufferSize: share.MAX_REQUEST_SIZE,
 		HandlerFunc: func(req []byte) (res []byte) {
-			log.Info("req: ", tools.BytesToStringFast(req))
 			taskPool.DoWait(func() error {
 				res = handler(req)
 				return nil
 			})
-			log.Info("rsp: ", tools.BytesToStringFast(res))
 			return
 		},
 	}
