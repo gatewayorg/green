@@ -18,12 +18,20 @@ import (
 	"fmt"
 	stdlog "log"
 	"os"
+	"strings"
 )
 
 // Logger is a generic logging interface
 type Logger interface {
-	Log(v ...interface{})
-	Logf(format string, v ...interface{})
+	SetLevel(l Level)
+	Debug(v ...interface{})
+	Debugf(format string, v ...interface{})
+	Info(v ...interface{})
+	Infof(format string, v ...interface{})
+	Error(v ...interface{})
+	Errorf(format string, v ...interface{})
+	Fatal(v ...interface{})
+	Fatalf(format string, v ...interface{})
 }
 
 // Level is a log level
@@ -65,13 +73,65 @@ var (
 	prefix = "[Green]"
 )
 
-type defaultLogLogger struct{}
-
-func (t *defaultLogLogger) Log(v ...interface{}) {
-	stdlog.Print(v...)
+type defaultLogLogger struct {
+	name  string
+	level Level
 }
 
-func (t *defaultLogLogger) Logf(format string, v ...interface{}) {
+func New(name string) Logger {
+	return &defaultLogLogger{
+		name:  name,
+		level: LevelInfo,
+	}
+}
+
+func (t *defaultLogLogger) Debug(v ...interface{}) {
+	t.WithLevel(LevelDebug, v...)
+}
+
+func (t *defaultLogLogger) Debugf(format string, v ...interface{}) {
+	t.WithLevelf(LevelDebug, format, v...)
+}
+func (t *defaultLogLogger) Info(v ...interface{}) {
+	t.WithLevel(LevelInfo, v...)
+}
+
+func (t *defaultLogLogger) Infof(format string, v ...interface{}) {
+	t.WithLevelf(LevelInfo, format, v...)
+}
+func (t *defaultLogLogger) Error(v ...interface{}) {
+	t.WithLevel(LevelError, v...)
+}
+
+func (t *defaultLogLogger) Errorf(format string, v ...interface{}) {
+	t.WithLevelf(LevelError, format, v...)
+}
+func (t *defaultLogLogger) Fatal(v ...interface{}) {
+	t.WithLevel(LevelFatal, v...)
+}
+
+func (t *defaultLogLogger) Fatalf(format string, v ...interface{}) {
+	t.WithLevelf(LevelFatal, format, v...)
+}
+
+func (t *defaultLogLogger) SetLevel(l Level) {
+	t.level = l
+}
+
+// WithLevel logs with the level specified
+func (t *defaultLogLogger) WithLevel(l Level, v ...interface{}) {
+	if l > t.level {
+		return
+	}
+	stdlog.Print(append([]interface{}{prefix, " [", t.name, "] ", l.String(), " "}, v...)...)
+}
+
+// WithLevelf logs with the level specified
+func (t *defaultLogLogger) WithLevelf(l Level, format string, v ...interface{}) {
+	if l > t.level {
+		return
+	}
+	format = strings.Join([]string{prefix, " [", t.name, "] ", l.String(), " ", format}, "")
 	stdlog.Printf(format, v...)
 }
 
@@ -89,20 +149,20 @@ func init() {
 }
 
 // Log makes use of Logger
-func Log(v ...interface{}) {
+func Log(l Level, v ...interface{}) {
 	if len(prefix) > 0 {
-		logger.Log(append([]interface{}{prefix, " "}, v...)...)
+		stdlog.Print(append([]interface{}{prefix, " ", l.String(), " "}, v...)...)
 		return
 	}
-	logger.Log(v...)
+	stdlog.Print(v...)
 }
 
 // Logf makes use of Logger
-func Logf(format string, v ...interface{}) {
+func Logf(l Level, format string, v ...interface{}) {
 	if len(prefix) > 0 {
-		format = prefix + " " + format
+		format = strings.Join([]string{prefix, " ", l.String(), " ", format}, "")
 	}
-	logger.Logf(format, v...)
+	stdlog.Printf(format, v...)
 }
 
 // WithLevel logs with the level specified
@@ -110,7 +170,7 @@ func WithLevel(l Level, v ...interface{}) {
 	if l > level {
 		return
 	}
-	Log(v...)
+	Log(l, v...)
 }
 
 // WithLevelf logs with the level specified
@@ -118,7 +178,7 @@ func WithLevelf(l Level, format string, v ...interface{}) {
 	if l > level {
 		return
 	}
-	Logf(format, v...)
+	Logf(l, format, v...)
 }
 
 // Debug provides debug level logging

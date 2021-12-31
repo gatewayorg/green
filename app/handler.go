@@ -14,14 +14,18 @@ var (
 )
 
 func handler(frame []byte) (out []byte) {
-
-	if err := codec.Check(frame); err != nil {
+	var err error
+	if err = codec.Check(frame); err != nil {
 		out = tools.StringToBytes(ErrRequest.Error())
 		return
 	}
 
-	if rsp, err := HandleNewConn(frame); err == nil {
-		out = rsp
+	if out, err = HandleNewConn(frame); err == nil {
+		return
+	}
+
+	if _, err = checkCommand(frame); err != nil {
+		out = tools.StringToBytes(err.Error())
 		return
 	}
 
