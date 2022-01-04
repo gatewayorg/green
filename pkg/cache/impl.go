@@ -6,7 +6,7 @@ type local struct {
 	c *fastcache.Cache
 }
 
-func New(maxBytes int) Cacher {
+func New(maxBytes int) ICache {
 	return &local{
 		c: fastcache.New(maxBytes),
 	}

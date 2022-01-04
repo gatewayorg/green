@@ -12,6 +12,8 @@ const (
 
 	WAL_DIR           = "wal"
 	WAL_SYNC_INTERVAL = "wal_sync_interval"
+
+	DATA_DIR = "db_path"
 )
 
 const (

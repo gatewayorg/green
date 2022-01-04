@@ -15,7 +15,7 @@ import (
 )
 
 var (
-	gCache cache.Cacher
+	gCache cache.ICache
 	gWal   *wal.WAL
 )
 
@@ -33,7 +33,7 @@ func initEnv(c *cli.Context) {
 	loadWal(gWal, gCache)
 }
 
-func loadWal(w *wal.WAL, c cache.Cacher) {
+func loadWal(w *wal.WAL, c cache.ICache) {
 	log.Info("reload data from wal starting ...")
 
 	bufferPool := bpool.NewBytePool(1, 65536)

@@ -63,6 +63,11 @@ func MainRun() {
 			Value: 5,
 			Usage: "sync wal log ervey n seconds",
 		},
+		&cli.StringFlag{
+			Name:  share.DATA_DIR,
+			Value: "data",
+			Usage: "database data path",
+		},
 	}
 
 	svr := cli.NewApp()
