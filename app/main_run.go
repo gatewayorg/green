@@ -13,8 +13,12 @@ import (
 )
 
 func MainRun(c *cli.Context) error {
+	setLogLevel(c)
+
 	// init global enviroment
 	initEnv(c)
+
+	tools.SafeGo(sync_data)
 
 	ctx, service := grace.New(context.Background())
 	service.Register(func() error {
@@ -48,5 +52,20 @@ func listenAndServ(ctx context.Context, c *cli.Context) {
 		strings.Join([]string{c.String(share.API_ADDR), c.String(share.API_PORT)}, ":"),
 		handler); err != nil {
 		panic(err)
+	}
+}
+
+func setLogLevel(c *cli.Context) {
+	switch c.String(share.LOG_LEVEL) {
+	case "debug":
+		log.SetLevel(log.LevelDebug)
+	case "info":
+		log.SetLevel(log.LevelInfo)
+	case "error":
+		log.SetLevel(log.LevelError)
+	case "fatal":
+		log.SetLevel(log.LevelFatal)
+	default:
+		log.SetLevel(log.LevelInfo)
 	}
 }

@@ -10,7 +10,6 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
-	"sort"
 	"strconv"
 	"strings"
 	"sync"
@@ -115,65 +114,6 @@ func Open(dir string, syncInterval time.Duration) (*WAL, error) {
 	}
 
 	return wal, nil
-}
-
-// Earliest return the earliest entry in current WAL
-func (wal *WAL) Earliest() ([]byte, Offset, error) {
-
-	var (
-		data   []byte
-		offset []byte
-		err    error
-		r      io.Reader
-		h      = NewHash()
-		pos    int64
-	)
-
-	files, err := ioutil.ReadDir(wal.dir)
-	if err != nil {
-		wal.log.Errorf("Unable to list log segments: %v", err)
-		return nil, nil, err
-	}
-	sort.Sort(Files(files))
-
-	r, err = os.OpenFile(filepath.Join(wal.dir, files[0].Name()), os.O_RDONLY, 0600)
-	if err != nil {
-		wal.log.Errorf("Unable to open WAL file %v: %v", files[0].Name(), err)
-		return nil, nil, err
-	}
-
-	if strings.HasSuffix(files[0].Name(), CompressedSuffix) {
-		r = snappy.NewReader(r)
-	} else {
-		r = bufio.NewReaderSize(r, DefaultFileBuffer)
-	}
-	headBuf := make([]byte, 8)
-	_, err = io.ReadFull(r, headBuf)
-	if err != nil {
-		wal.log.Errorf("Unable to read log segments: %v", err)
-		return nil, nil, err
-	}
-
-	length := int64(encoding.Uint32(headBuf))
-	checksum := uint32(encoding.Uint32(headBuf[4:]))
-	data = make([]byte, length)
-	_, err = io.ReadFull(r, data)
-	if err != nil {
-		wal.log.Errorf("Unable to read earliest segments: %v", err)
-		return nil, nil, err
-	}
-	h.Reset()
-	h.Write(data)
-	if h.Sum32() != checksum {
-		wal.log.Errorf("earliest segment checksum failed  expectd: %d got:%d", checksum, h.Sum32())
-		return nil, nil, err
-	}
-
-	fileSeq := filenameToSequence(files[0].Name())
-	pos += 8 + length
-	offset = newOffset(fileSeq, pos)
-
-	return data, offset, nil
 }
 
 // Latest() returns the latest entry in the WAL along with its offset

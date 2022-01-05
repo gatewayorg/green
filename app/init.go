@@ -7,6 +7,8 @@ import (
 	"github.com/gatewayorg/green/pkg/cache"
 	"github.com/gatewayorg/green/pkg/codec"
 	"github.com/gatewayorg/green/pkg/log"
+	"github.com/gatewayorg/green/pkg/store"
+	"github.com/gatewayorg/green/pkg/store/pebble"
 	"github.com/gatewayorg/green/pkg/wal"
 	"github.com/gatewayorg/green/share"
 	"github.com/oxtoacart/bpool"
@@ -15,14 +17,17 @@ import (
 )
 
 var (
-	gCache cache.ICache
-	gWal   *wal.WAL
+	gCache    cache.ICache
+	gWal      *wal.WAL
+	gKVClient store.IKV
 )
 
 func initEnv(c *cli.Context) {
 	var err error
 	gCache = cache.New(c.Int(share.CACHE_SIZE))
 	os.MkdirAll(c.String(share.WAL_DIR), 0766)
+	// low level store
+	gKVClient = pebble.New()
 
 	gWal, err = wal.Open(c.String(share.WAL_DIR), time.Duration(c.Int(share.WAL_SYNC_INTERVAL)))
 	if err != nil {

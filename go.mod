@@ -4,9 +4,9 @@ go 1.17
 
 require (
 	github.com/VictoriaMetrics/fastcache v1.8.0
-	github.com/cespare/xxhash/v2 v2.1.2
 	github.com/cockroachdb/pebble v0.0.0-20211222161641-06e42cfa82c0
 	github.com/dustin/go-humanize v1.0.0
+	github.com/go-redis/redis v6.15.9+incompatible
 	github.com/golang/snappy v0.0.4
 	github.com/oxtoacart/bpool v0.0.0-20190530202638-03653db5a59c
 	github.com/stretchr/testify v1.7.0
@@ -16,6 +16,7 @@ require (
 
 require (
 	github.com/DataDog/zstd v1.4.5 // indirect
+	github.com/cespare/xxhash/v2 v2.1.2 // indirect
 	github.com/cockroachdb/errors v1.8.1 // indirect
 	github.com/cockroachdb/logtags v0.0.0-20190617123548-eb05cc24525f // indirect
 	github.com/cockroachdb/redact v1.0.8 // indirect
