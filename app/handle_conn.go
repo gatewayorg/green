@@ -14,7 +14,7 @@ var (
 )
 
 func HandleNewConn(frame []byte) ([]byte, error) {
-	if newConCmd == string(frame) {
+	if newConCmd == tools.BytesToStringFast(frame) {
 		return tools.StringToBytes(newConRsp), nil
 	}
 	return nil, notNewCon

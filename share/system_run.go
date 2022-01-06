@@ -4,3 +4,7 @@ const (
 	MAX_REQUEST_SIZE = 1 << 16
 	CACHE_SIZE       = "size"
 )
+
+const (
+	CLUSTER_SLAVE = "slave"
+)

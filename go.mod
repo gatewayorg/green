@@ -6,15 +6,16 @@ require (
 	github.com/VictoriaMetrics/fastcache v1.8.0
 	github.com/cockroachdb/pebble v0.0.0-20211222161641-06e42cfa82c0
 	github.com/dustin/go-humanize v1.0.0
-	github.com/go-redis/redis v6.15.9+incompatible
 	github.com/golang/snappy v0.0.4
 	github.com/oxtoacart/bpool v0.0.0-20190530202638-03653db5a59c
 	github.com/stretchr/testify v1.7.0
 	github.com/sunvim/utils v0.0.1
+	github.com/urfave/cli v1.22.5
 	github.com/urfave/cli/v2 v2.3.0
 )
 
 require (
+	github.com/BurntSushi/toml v0.3.1 // indirect
 	github.com/DataDog/zstd v1.4.5 // indirect
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
 	github.com/cockroachdb/errors v1.8.1 // indirect
@@ -39,5 +40,6 @@ require (
 	golang.org/x/exp v0.0.0-20200513190911-00229845015e // indirect
 	golang.org/x/sys v0.0.0-20210910150752-751e447fb3d0 // indirect
 	gopkg.in/eapache/queue.v1 v1.1.0 // indirect
+	gopkg.in/yaml.v2 v2.3.0 // indirect
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
 )
