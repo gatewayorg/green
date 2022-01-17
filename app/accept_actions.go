@@ -27,7 +27,8 @@ var cmdMap = map[string]KVFunc{
 	// for admin
 	"PING": PingHandler,
 	// for cluster
-	"SLAVE": SlaveHandler,
+	"SLAVEOF": SlaveHandler,
+	"SYNC":    SyncHandler,
 }
 
 var (
