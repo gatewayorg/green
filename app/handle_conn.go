@@ -3,7 +3,7 @@ package app
 import (
 	"errors"
 
-	"github.com/sunvim/utils/tools"
+	"github.com/gatewayorg/green/pkg/util"
 )
 
 var (
@@ -14,8 +14,8 @@ var (
 )
 
 func HandleNewConn(frame []byte) ([]byte, error) {
-	if newConCmd == tools.BytesToStringFast(frame) {
-		return tools.StringToBytes(newConRsp), nil
+	if newConCmd == util.BytesToString(frame) {
+		return util.StringToBytes(newConRsp), nil
 	}
 	return nil, notNewCon
 }

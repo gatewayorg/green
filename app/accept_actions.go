@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/gatewayorg/green/pkg/codec"
-	"github.com/sunvim/utils/tools"
+	"github.com/gatewayorg/green/pkg/util"
 )
 
 type KVFunc func(req []byte, rsp *[]byte)
@@ -42,7 +42,7 @@ func checkCommand(frame []byte) (command []byte, err error) {
 		err = ErrRequest
 		return
 	}
-	if _, ok := cmdMap[strings.ToUpper(tools.BytesToStringFast(command))]; ok {
+	if _, ok := cmdMap[strings.ToUpper(util.BytesToString(command))]; ok {
 		return
 	}
 	err = ErrNotSupportCommand

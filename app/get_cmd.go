@@ -18,11 +18,13 @@ func GetHandler(req []byte, rsp *[]byte) {
 		*rsp = append(*rsp, util.StringToBytes(ErrRequest.Error())...)
 		return
 	}
+	rs := gBytePool.Get()
+	rs = rs[:0]
 
 	// step 1: get the value form cache
-	rs := gCache.Get(nil, key)
+	rs = gCache.Get(rs, key)
 	// step 2: if not exist, then get the value from low level
-	if rs == nil {
+	if len(rs) == 0 {
 		rs, err = gKVClient.Get(key)
 		if err != nil {
 			log.Debug("not exist key: ", util.BytesToString(key))
@@ -30,6 +32,7 @@ func GetHandler(req []byte, rsp *[]byte) {
 			return
 		}
 	}
+
 	// format response data
 	buf := bufPool.Get().(*bytes.Buffer)
 	defer bufPool.Put(buf)

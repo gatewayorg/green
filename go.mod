@@ -10,7 +10,7 @@ require (
 	github.com/golang/snappy v0.0.4
 	github.com/oxtoacart/bpool v0.0.0-20190530202638-03653db5a59c
 	github.com/stretchr/testify v1.7.0
-	github.com/sunvim/utils v0.0.1
+	github.com/sunvim/utils v0.0.3
 	github.com/urfave/cli/v2 v2.3.0
 )
 
@@ -33,7 +33,7 @@ require (
 	github.com/hslam/splice v1.0.3 // indirect
 	github.com/klauspost/compress v1.11.7 // indirect
 	github.com/kr/pretty v0.1.0 // indirect
-	github.com/kr/text v0.1.0 // indirect
+	github.com/kr/text v0.2.0 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/russross/blackfriday/v2 v2.0.1 // indirect

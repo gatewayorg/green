@@ -35,10 +35,8 @@ func MainRun(c *cli.Context) error {
 }
 
 func listenAndServ(ctx context.Context, c *cli.Context) {
-	var handler = &netpoll.DataHandler{
-		NoShared:   false,
-		NoCopy:     true,
-		BufferSize: share.MAX_REQUEST_SIZE,
+	var srvHandler = &netpoll.DataHandler{
+		Pool: gBytePool,
 		HandlerFunc: func(req []byte) (res []byte) {
 			taskPool.DoWait(func() error {
 				res = handler(req)
@@ -50,7 +48,7 @@ func listenAndServ(ctx context.Context, c *cli.Context) {
 	log.Info("service booting with ", c.String(share.API_ADDR), ":", c.String(share.API_PORT))
 	if err := netpoll.ListenAndServe("tcp",
 		strings.Join([]string{c.String(share.API_ADDR), c.String(share.API_PORT)}, ":"),
-		handler); err != nil {
+		srvHandler); err != nil {
 		panic(err)
 	}
 }

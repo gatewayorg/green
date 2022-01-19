@@ -96,6 +96,44 @@ func ExtactKeyAndValue(frame []byte) (key, value []byte, err error) {
 	return
 }
 
+// ExtractCmdAndKeyAndValue extract key and value for dispatch backend server
+func ExtactCmdAndKeyAndValue(frame []byte) (cmd, key, value []byte, err error) {
+
+	reader := NewReader(bytes.NewReader(frame))
+
+	// skip request message length
+	reader.readLine()
+
+	// skip key command length
+	reader.readLine()
+
+	// take command
+	cmd, err = reader.readLine()
+	if err != nil {
+		return nil, nil, nil, err
+	}
+	cmd = cmd[:len(key)-2]
+
+	// skip key  length
+	reader.readLine()
+	key, err = reader.readLine()
+	if err != nil {
+		return nil, nil, nil, err
+	}
+	key = key[:len(key)-2]
+
+	// skip value length
+	reader.readLine()
+	// take value
+	value, err = reader.readLine()
+	if err != nil {
+		return nil, nil, nil, err
+	}
+	value = value[:len(value)-2]
+
+	return
+}
+
 func ExtractCommand(frame []byte) (key []byte, err error) {
 	reader := NewReader(bytes.NewReader(frame))
 
