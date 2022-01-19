@@ -12,7 +12,7 @@ type KVFunc func(req []byte, rsp *[]byte)
 
 var cmdMap = map[string]KVFunc{
 	// for keys
-	"DEL":    nil,
+	"DEL":    DelHandler,
 	"EXISTS": nil,
 	// for strings
 	"SET": SetHandler,

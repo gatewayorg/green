@@ -1,6 +1,8 @@
 package app
 
 import (
+	"time"
+
 	"github.com/gatewayorg/green/pkg/codec"
 	"github.com/go-redis/redis/v8"
 	"github.com/sunvim/utils/tools"
@@ -32,6 +34,10 @@ func SlaveHandler(req []byte, rsp *[]byte) {
 		})
 		addrm[addr] = cli
 		// send message where sync data from
+		tick := time.Tick(time.Second)
+		for range tick {
+			println(time.Now().String())
+		}
 		return nil
 	})
 
