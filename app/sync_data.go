@@ -6,30 +6,28 @@ import (
 	"github.com/gatewayorg/green/pkg/codec"
 	"github.com/gatewayorg/green/pkg/log"
 	"github.com/gatewayorg/green/pkg/wal"
-	"github.com/oxtoacart/bpool"
 	"github.com/sunvim/utils/tools"
 )
 
 var (
-	timeSeg = 3 * time.Hour
+	timeSeg = 1 * time.Hour
 )
 
 // sync data into low level db, cache remain one hour data
 func sync_data() {
-	bufferPool := bpool.NewBytePool(1, 65536)
+	ticker := time.Tick(timeSeg)
 
-	for range time.Tick(timeSeg) {
+	for range ticker {
 		log.Debug("sync data start...")
 
 		ts := wal.NewOffsetForTS(time.Now().Add(-1 * timeSeg))
-		wr, err := gWal.NewReader("sync", ts, bufferPool.Get)
+		wr, err := gWal.NewReader("sync", ts, gBytePool.Get)
 		if err != nil {
 			log.Error(err)
 			return
 		}
 
 		for {
-
 			data, err := wr.Read()
 			if err != nil {
 				log.Error(err)

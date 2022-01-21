@@ -8,7 +8,7 @@ import (
 func DelHandler(req []byte, rsp *[]byte) {
 	key, err := codec.ExtactKey(req)
 	if err != nil {
-		*rsp = append(*rsp, tools.StringToBytes(ErrRequest.Error())...)
+		*rsp = append(*rsp, tools.StringToBytes(ErrRequest)...)
 		return
 	}
 	// write ahead log

@@ -2,7 +2,6 @@ package app
 
 import (
 	"bytes"
-	"errors"
 	"strings"
 	"sync"
 
@@ -17,7 +16,7 @@ const (
 
 var (
 	taskPool   = workpool.New(MAX_WORKER_SIZE)
-	ErrRequest = errors.New("- error request message\r\n")
+	ErrRequest = "- error request message\r\n"
 	bufPool    = sync.Pool{
 		New: func() interface{} {
 			return bytes.NewBuffer([]byte{})
@@ -27,25 +26,26 @@ var (
 
 func handler(frame []byte) []byte {
 	var (
-		err      error
-		cmd, out []byte
+		err error
+		out []byte
 	)
-	if err = codec.Check(frame); err != nil {
-		return util.StringToBytes(ErrRequest.Error())
-	}
-
 	if out, err = HandleNewConn(frame); err == nil {
 		return out
 	}
 
-	if cmd, err = checkCommand(frame); err != nil {
-		return util.StringToBytes(err.Error())
+	cmdKey, err := codec.ExtractCommand(frame)
+	if err != nil {
+		return util.StringToBytes(ErrRequest)
 	}
 
 	out = gBytePool.Get()
 	out = out[:0]
 	// cache handler
-	cmdMap[strings.ToUpper(util.BytesToString(cmd))](frame, &out)
+	if cmd, ok := cmdMap[strings.ToUpper(util.BytesToString(cmdKey))]; ok {
+		cmd(frame, &out)
+	} else {
+		return util.StringToBytes(ErrNotSupportCommand)
+	}
 
 	return out
 }

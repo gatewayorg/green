@@ -23,7 +23,7 @@ import (
 
 const (
 	sentinel          = 0
-	DefaultFileBuffer = 2 << 16 // 64 KB
+	DefaultFileBuffer = 2 << 22 // 4 MB
 	maxEntrySize      = 2 << 24 // 16 MB, used to restrain the building of excessively large entry buffers in certain cases of file corruption
 	CompressedSuffix  = ".snappy"
 )
@@ -87,7 +87,9 @@ type WAL struct {
 	syncImmediate bool
 	writer        *bufio.Writer
 	closed        bool
+	bufChan       chan [][]byte
 	mx            sync.RWMutex
+	exit          chan struct{}
 }
 
 // Open opens a WAL in the given directory. It will be force synced to disk
@@ -101,6 +103,8 @@ func Open(dir string, syncInterval time.Duration) (*WAL, error) {
 			h:         NewHash(),
 			log:       log.New("wal"),
 		},
+		bufChan: make(chan [][]byte, 4096),
+		exit:    make(chan struct{}),
 	}
 	err := wal.advance()
 	if err != nil {
@@ -112,6 +116,13 @@ func Open(dir string, syncInterval time.Duration) (*WAL, error) {
 	} else {
 		go wal.sync(syncInterval)
 	}
+
+	go func() {
+		for bufs := range wal.bufChan {
+			wal.write(bufs...)
+		}
+		wal.exit <- struct{}{}
+	}()
 
 	return wal, nil
 }
@@ -184,8 +195,13 @@ func (wal *WAL) Latest() ([]byte, Offset, error) {
 	return data, offset, err
 }
 
-// Write atomically writes one or more buffers to the WAL.
 func (wal *WAL) Write(bufs ...[]byte) (int, error) {
+	wal.bufChan <- bufs
+	return 0, nil
+}
+
+// Write atomically writes one or more buffers to the WAL.
+func (wal *WAL) write(bufs ...[]byte) (int, error) {
 	wal.mx.Lock()
 	defer wal.mx.Unlock()
 
@@ -413,6 +429,8 @@ func (wal *WAL) forEachSegmentInReverse(cb func(file os.FileInfo, first bool, la
 // Close closes the wal, including flushing any unsaved writes.
 func (wal *WAL) Close() error {
 	wal.mx.Lock()
+	close(wal.bufChan)
+	<-wal.exit
 	flushErr := wal.writer.Flush()
 	syncErr := wal.file.Sync()
 	wal.closed = true

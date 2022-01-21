@@ -21,7 +21,7 @@ var (
 func SlaveHandler(req []byte, rsp *[]byte) {
 	_, val, err := codec.ExtactKeyAndValue(req)
 	if err != nil {
-		*rsp = append(*rsp, tools.StringToBytes(ErrRequest.Error())...)
+		*rsp = append(*rsp, tools.StringToBytes(ErrRequest)...)
 		return
 	}
 

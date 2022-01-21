@@ -9,7 +9,7 @@ import (
 func SetHandler(req []byte, rsp *[]byte) {
 	key, val, err := codec.ExtactKeyAndValue(req)
 	if err != nil {
-		*rsp = append(*rsp, util.StringToBytes(ErrRequest.Error())...)
+		*rsp = append(*rsp, util.StringToBytes(ErrRequest)...)
 		return
 	}
 	log.Debug("key: ", util.BytesToString(key), " val: ", util.BytesToString(val))

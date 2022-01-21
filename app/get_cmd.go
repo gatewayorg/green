@@ -15,7 +15,7 @@ var (
 func GetHandler(req []byte, rsp *[]byte) {
 	key, err := codec.ExtactKey(req)
 	if err != nil {
-		*rsp = append(*rsp, util.StringToBytes(ErrRequest.Error())...)
+		*rsp = append(*rsp, util.StringToBytes(ErrRequest)...)
 		return
 	}
 	rs := gBytePool.Get()

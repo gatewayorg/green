@@ -1,13 +1,5 @@
 package app
 
-import (
-	"errors"
-	"strings"
-
-	"github.com/gatewayorg/green/pkg/codec"
-	"github.com/gatewayorg/green/pkg/util"
-)
-
 type KVFunc func(req []byte, rsp *[]byte)
 
 var cmdMap = map[string]KVFunc{
@@ -32,19 +24,5 @@ var cmdMap = map[string]KVFunc{
 }
 
 var (
-	ErrNotSupportCommand = errors.New("- not support command\r\n")
+	ErrNotSupportCommand = "- not support command\r\n"
 )
-
-func checkCommand(frame []byte) (command []byte, err error) {
-	// check command
-	command, err = codec.ExtractCommand(frame)
-	if err != nil {
-		err = ErrRequest
-		return
-	}
-	if _, ok := cmdMap[strings.ToUpper(util.BytesToString(command))]; ok {
-		return
-	}
-	err = ErrNotSupportCommand
-	return
-}
